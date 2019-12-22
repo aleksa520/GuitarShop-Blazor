@@ -1,0 +1,69 @@
+﻿@page "/guitars"
+@inject HttpClient http
+
+<h3>Guitars</h3>
+
+@if (guitars == null)
+{
+    <text>Loading...</text>
+}
+else if (guitars.Length == 0)
+{
+    <text>There Are No Records in Database...</text>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var guitar in guitars)
+            {
+                <tr>
+                    <td>
+                        <a class="btn btn-success">Edit</a>
+                        <button class="btn btn-danger">Delete</button>
+                    </td>
+                    <td>@guitar.Id</td>
+                    <td>@guitar.Name</td>
+                    <td>@guitar.Price</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    Guitar[] guitars { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadGuitars();
+    }
+
+    async Task LoadGuitars()
+    {
+        guitars = await http.GetJsonAsync<Guitar[]>("api/guitars");
+        guitars = new Guitar[]
+        {
+            new Guitar
+            {
+                Id = 1,
+                Name = "Fender Stratocaster",
+                Price = 1400
+            },
+            new Guitar
+            {
+                Id = 2,
+                Name = "Gibson Les Paul",
+                Price = 1200
+            }
+        };
+    }
+}
