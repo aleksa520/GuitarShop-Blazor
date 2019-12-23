@@ -1,0 +1,25 @@
+﻿@page "/guitars/edit/{guitarId:int}"
+@inject HttpClient http
+@inject NavigationManager navigationManager
+
+<h3>Edit</h3>
+
+<GuitarForm ButtonText="Edit Guitar" Guitar="@guitar" OnValidSubmit="@EditGuitar"></GuitarForm>
+
+@code {
+
+    [Parameter] public int guitarId { get; set; }
+
+    Guitar guitar = new Guitar();
+
+    protected async override Task OnParametersSetAsync()
+    {
+        guitar = await http.GetJsonAsync<Guitar>($"api/guitars/{guitarId}");
+    }
+
+    async Task EditGuitar()
+    {
+        await http.PutJsonAsync("api/guitars", guitar);
+        navigationManager.NavigateTo("guitars");
+    }
+}

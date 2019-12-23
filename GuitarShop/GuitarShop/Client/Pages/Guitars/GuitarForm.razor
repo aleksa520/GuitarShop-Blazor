@@ -1,0 +1,33 @@
+﻿
+<EditForm Model="@Guitar" OnValidSubmit="@OnValidSubmit">
+    <DataAnnotationsValidator />
+    <div class="form-field">
+        <label>Name: </label>
+        <div>
+            <InputText @bind-Value="@Guitar.Name"></InputText>
+            <ValidationMessage For="(() => Guitar.Name)" />
+        </div>
+    </div>
+    <div class="form-field">
+        <label>Price: </label>
+        <div>
+            <InputNumber @bind-Value="@Guitar.Price"></InputNumber>
+            <ValidationMessage For="(() => Guitar.Price)" />
+        </div>
+    </div>
+    <div style="padding:5px">
+        <button type="submit" class="btn btn-success">
+            @ButtonText
+        </button>
+    </div>
+</EditForm>
+@code {
+    [Parameter]
+    public Guitar Guitar { get; set; }
+
+    [Parameter]
+    public string ButtonText { get; set; } = "Save Guitar";
+
+    [Parameter]
+    public EventCallback OnValidSubmit { get; set; }
+}

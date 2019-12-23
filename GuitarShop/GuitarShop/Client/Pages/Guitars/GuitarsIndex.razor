@@ -1,7 +1,12 @@
 ﻿@page "/guitars"
 @inject HttpClient http
+@inject IJSRuntime js
 
 <h3>Guitars</h3>
+
+<div>
+    <a class="btn btn-success" href="guitars/create">Add Guitar</a>
+</div>
 
 @if (guitars == null)
 {
@@ -27,12 +32,12 @@ else
             {
                 <tr>
                     <td>
-                        <a class="btn btn-success">Edit</a>
-                        <button class="btn btn-danger">Delete</button>
+                        <a class="btn btn-success" href="guitars/edit/@guitar.Id">Edit</a>
+                        <button class="btn btn-danger" @onclick="@(()=>DeleteGuitar(guitar.Id))">Delete</button>
                     </td>
                     <td>@guitar.Id</td>
                     <td>@guitar.Name</td>
-                    <td>@guitar.Price</td>
+                    <td>@guitar.Price $</td>
                 </tr>
             }
         </tbody>
@@ -50,20 +55,16 @@ else
     async Task LoadGuitars()
     {
         guitars = await http.GetJsonAsync<Guitar[]>("api/guitars");
-        guitars = new Guitar[]
+    }
+
+    async Task DeleteGuitar(int guitarId)
+    {
+        var guitarSelected = guitars.First(x => x.Id == guitarId);
+
+        if (await js.InvokeAsync<bool>("confirm", $"Do You Want To Delete {guitarSelected.Name}?")) 
         {
-            new Guitar
-            {
-                Id = 1,
-                Name = "Fender Stratocaster",
-                Price = 1400
-            },
-            new Guitar
-            {
-                Id = 2,
-                Name = "Gibson Les Paul",
-                Price = 1200
-            }
-        };
+            await http.DeleteAsync($"api/guitars/{guitarId}");
+            await LoadGuitars();
+        }
     }
 }

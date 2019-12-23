@@ -1,0 +1,18 @@
+﻿@page "/guitars/create"
+@inject HttpClient http
+@inject NavigationManager navigationManager
+
+<h3>Create</h3>
+
+<GuitarForm ButtonText="Create Guitar" Guitar="@guitar" OnValidSubmit="@CreateGuitar"></GuitarForm>
+
+@code {
+
+    Guitar guitar = new Guitar();
+
+    async Task CreateGuitar()
+    {
+        await http.PostJsonAsync("api/guitars", guitar);
+        navigationManager.NavigateTo("guitars");
+    }
+}

@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29519.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuitarShop.Server", "GuitarShop\Server\GuitarShop.Server.csproj", "{4D406729-1978-4B78-833F-F1AC0ACFD874}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuitarShop.Server", "GuitarShop\Server\GuitarShop.Server.csproj", "{4D406729-1978-4B78-833F-F1AC0ACFD874}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuitarShop.Client", "GuitarShop\Client\GuitarShop.Client.csproj", "{3882E83A-D40D-4C5C-A69E-D43CAD7800C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuitarShop.Client", "GuitarShop\Client\GuitarShop.Client.csproj", "{3882E83A-D40D-4C5C-A69E-D43CAD7800C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuitarShop.Shared", "GuitarShop\Shared\GuitarShop.Shared.csproj", "{EE766D9A-9BA9-472D-BE0E-2EA61D49417E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuitarShop.Shared", "GuitarShop\Shared\GuitarShop.Shared.csproj", "{EE766D9A-9BA9-472D-BE0E-2EA61D49417E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
