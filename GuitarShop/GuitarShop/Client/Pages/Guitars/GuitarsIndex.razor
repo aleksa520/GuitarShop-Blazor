@@ -1,48 +1,57 @@
 ﻿@page "/guitars"
 @inject HttpClient http
 @inject IJSRuntime js
+@using System.IO
 
-<h3>Guitars</h3>
+<h3 style="padding:30px" class="card-header-tabs">Guitars</h3>
 
-<div>
-    <a class="btn btn-success" href="guitars/create">Add Guitar</a>
-</div>
+@*<div>
+        <a class="btn btn-success" href="guitars/create">Add Guitar</a>
+    </div>*@
 
-@if (guitars == null)
-{
-    <text>Loading...</text>
-}
-else if (guitars.Length == 0)
-{
-    <text>There Are No Records in Database...</text>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th></th>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Price</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var guitar in guitars)
-            {
+<div class="container">
+    @if (guitars == null)
+    {
+        <text>Loading...</text>
+    }
+    else if (guitars.Length == 0)
+    {
+        <text>There Are No Records in Database...</text>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>
-                        <a class="btn btn-success" href="guitars/edit/@guitar.Id">Edit</a>
-                        <button class="btn btn-danger" @onclick="@(()=>DeleteGuitar(guitar.Id))">Delete</button>
-                    </td>
-                    <td>@guitar.Id</td>
-                    <td>@guitar.Name</td>
-                    <td>@guitar.Price $</td>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th></th>
                 </tr>
-            }
-        </tbody>
-    </table>
-}
+            </thead>
+            <tbody>
+                @foreach (var guitar in guitars)
+                {
+                    <tr>
+                        <td>@guitar.Id</td>
+                        <td>@guitar.Name</td>
+                        <td>@guitar.Price $</td>
+                        <td>
+                            <a class="btn btn-success" href="guitars/edit/@guitar.Id">Edit</a>
+                            <button class="btn btn-danger" @onclick="@(()=>DeleteGuitar(guitar.Id))">Delete</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    <div class="btn-holder">
+        <a class="btn btn-success" href="guitars/create">Add Guitar</a>
+    </div>
+</div>
+@*<button class="btn btn-primary" @onclick="@(e=> exportFlexGrid("FlexGrid",table.html))">Html</button>*@
+<button style="padding:20px" @onclick="ExportAsCSV">Export as CSV</button>
+
 
 @code {
     Guitar[] guitars { get; set; }
@@ -61,10 +70,36 @@ else
     {
         var guitarSelected = guitars.First(x => x.Id == guitarId);
 
-        if (await js.InvokeAsync<bool>("confirm", $"Do You Want To Delete {guitarSelected.Name}?")) 
+        if (await js.InvokeAsync<bool>("confirm", $"Do You Want To Delete {guitarSelected.Name}?"))
         {
             await http.DeleteAsync($"api/guitars/{guitarId}");
             await LoadGuitars();
+        }
+    }
+
+    //public void exportFlexGrid(string fileName,GridFileFormat format)
+    //{
+    //    var _fileNameWithExtn = fileName+"." + format.ToString();
+    //    var stream = new MemoryStream();
+    //    grid.Save(stream, format);
+    //    /* Uncomment following code line to download the saved file on client side */
+    //    //JsRuntime.InvokeAsync&lt;object>("saveAsFile", _fileNameWithExtn ,stream.ToArray()).AsTask();
+    //}   
+
+    private void ExportAsCSV()
+    {
+        using (var memoryStream = new MemoryStream())
+        {
+            using (var writer = new StreamWriter(memoryStream))
+            {
+                using (var csv = new CsvHelper.CsvWriter(writer))
+                {
+                    csv.WriteRecord(guitars);
+                }
+
+                var arr = memoryStream.ToArray();
+                js.SaveAs("guitars.csv", arr);
+            }
         }
     }
 }
