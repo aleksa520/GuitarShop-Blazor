@@ -68,9 +68,9 @@
 
     async Task DeleteGuitar(int guitarId)
     {
+        //await js.DisplayMassage("My message");
         var guitarSelected = guitars.First(x => x.Id == guitarId);
-
-        if (await js.InvokeAsync<bool>("confirm", $"Do You Want To Delete {guitarSelected.Name}?"))
+        if (await js.Confirm("Confirm", $"Do You Want To Delete {guitarSelected.Name}?",SweetAlertMessageType.question))
         {
             await http.DeleteAsync($"api/guitars/{guitarId}");
             await LoadGuitars();
