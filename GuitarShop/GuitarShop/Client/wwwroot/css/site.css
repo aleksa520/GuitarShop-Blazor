@@ -4,7 +4,7 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
-.container {
+/*.container {
     justify-content: space-between;
     flex-direction: column;
     height: 70vh;
@@ -14,7 +14,7 @@ html, body {
     .container .btn-holder {
         justify-content: flex-end;
         display: flex;
-    }
+    }*/
 
 a, .btn-link {
     color: #0366d6;

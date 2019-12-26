@@ -10,51 +10,75 @@
     </div>*@
 
 <div class="container">
-    @if (guitars == null)
-    {
-        <text>Loading...</text>
-    }
-    else if (guitars.Length == 0)
-    {
-        <text>There Are No Records in Database...</text>
-    }
-    else
-    {
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var guitar in guitars)
-                {
+
+    <GenericList Elements="guitars">
+        <NullTemplate>
+            <div>
+                <img class="center" height="100" width="100" src="http://www.pzv.org.rs/obuke/images/loading.gif" />
+            </div>
+        </NullTemplate>
+        
+        <WithElementsTemplate>
+            <div style="padding-bottom:10px" class="btn-holder">
+                <a class="btn btn-success" href="guitars/create">Add Guitar</a>
+            </div>
+
+            <table class="table">
+                <thead>
                     <tr>
-                        <td>@guitar.Id</td>
-                        <td>@guitar.Name</td>
-                        <td>@guitar.Price $</td>
-                        <td>
-                            <a class="btn btn-success" href="guitars/edit/@guitar.Id">Edit</a>
-                            <button class="btn btn-danger" @onclick="@(()=>DeleteGuitar(guitar.Id))">Delete</button>
-                        </td>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th></th>
                     </tr>
-                }
-            </tbody>
-        </table>
-        <div class="btn-holder">
-            <a class="btn btn-success" href="guitars/create">Add Guitar</a>
-        </div>
-        <div class="btn-holder">
-            <button class="btn btn-dark" style="padding:20px" @onclick="ExportAsCSV">Export as CSV</button>
-        </div>
-    }
+                </thead>
+                <tbody>
+                    @foreach (var guitar in guitars)
+                    {
+                        <tr>
+                            <td>@guitar.Id</td>
+                            <td>@guitar.Name</td>
+                            <td>@guitar.Price $</td>
+                            <td>
+                                <a class="btn btn-success" href="guitars/edit/@guitar.Id">Edit</a>
+                                <button class="btn btn-danger" @onclick="@(()=>DeleteGuitar(guitar.Id))">Delete</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="btn-holder">
+                <button class="btn btn-dark" style="padding:20px" @onclick="ExportAsCSV">Export as CSV</button>
+            </div>
+        </WithElementsTemplate>
+    </GenericList>
+
+    @*<GenericList Elements="guitars">
+        <WithIndividualElementTemplate Context="guitar">
+            <div class="card">
+                <div class="card-body">
+                    @guitar.Name
+                </div>
+            </div>
+        </WithIndividualElementTemplate>
+    </GenericList>*@
+
+    @*@if (guitars == null)
+        {
+            <text>Loading...</text>
+        }
+        else if (guitars.Length == 0)
+        {
+            <text>There Are No Records in Database...</text>
+        }
+        else
+        {
+
+        }*@
 </div>
 
 @code {
-    Guitar[] guitars { get; set; }
+    List<Guitar> guitars { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -63,7 +87,7 @@
 
     async Task LoadGuitars()
     {
-        guitars = await http.GetJsonAsync<Guitar[]>("api/guitars");
+        guitars = await http.GetJsonAsync<List<Guitar>>("api/guitars");
     }
 
     async Task DeleteGuitar(int guitarId)
