@@ -43,7 +43,7 @@ namespace GuitarShop.Server.Controllers
         {
             context.Entry(guitar).State = EntityState.Modified;
             await context.SaveChangesAsync();
-            return NoContent();
+            return Ok();
         }
 
         [HttpDelete("{id}")]
@@ -55,7 +55,7 @@ namespace GuitarShop.Server.Controllers
             };
             context.Remove(guitar);
             await context.SaveChangesAsync();
-            return NoContent();
+            return Ok();
         }
     }
 }

@@ -44,14 +44,14 @@
                 }
             </tbody>
         </table>
+        <div class="btn-holder">
+            <a class="btn btn-success" href="guitars/create">Add Guitar</a>
+        </div>
+        <div class="btn-holder">
+            <button class="btn btn-dark" style="padding:20px" @onclick="ExportAsCSV">Export as CSV</button>
+        </div>
     }
-    <div class="btn-holder">
-        <a class="btn btn-success" href="guitars/create">Add Guitar</a>
-    </div>
 </div>
-@*<button class="btn btn-primary" @onclick="@(e=> exportFlexGrid("FlexGrid",table.html))">Html</button>*@
-<button style="padding:20px" @onclick="ExportAsCSV">Export as CSV</button>
-
 
 @code {
     Guitar[] guitars { get; set; }
@@ -70,21 +70,12 @@
     {
         //await js.DisplayMassage("My message");
         var guitarSelected = guitars.First(x => x.Id == guitarId);
-        if (await js.Confirm("Confirm", $"Do You Want To Delete {guitarSelected.Name}?",SweetAlertMessageType.question))
+        if (await js.Confirm("", $"Do You Want To Delete {guitarSelected.Name}?", SweetAlertMessageType.question))
         {
             await http.DeleteAsync($"api/guitars/{guitarId}");
             await LoadGuitars();
         }
     }
-
-    //public void exportFlexGrid(string fileName,GridFileFormat format)
-    //{
-    //    var _fileNameWithExtn = fileName+"." + format.ToString();
-    //    var stream = new MemoryStream();
-    //    grid.Save(stream, format);
-    //    /* Uncomment following code line to download the saved file on client side */
-    //    //JsRuntime.InvokeAsync&lt;object>("saveAsFile", _fileNameWithExtn ,stream.ToArray()).AsTask();
-    //}   
 
     private void ExportAsCSV()
     {
@@ -94,7 +85,11 @@
             {
                 using (var csv = new CsvHelper.CsvWriter(writer))
                 {
-                    csv.WriteRecord(guitars);
+                    foreach (var guitar in guitars)
+                    {
+                        csv.WriteRecord(guitar);
+                        csv.NextRecord();
+                    }
                 }
 
                 var arr = memoryStream.ToArray();
