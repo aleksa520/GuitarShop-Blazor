@@ -1,4 +1,5 @@
-﻿using GuitarShop.Shared.Models;
+﻿using GuitarShop.Server.Helpers;
+using GuitarShop.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -19,9 +20,11 @@ namespace GuitarShop.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Guitar>>> Get()
+        public async Task<ActionResult<List<Guitar>>> Get([FromQuery]PaginationDTO pagination)
         {
-            return await context.Guitars.ToListAsync();
+            var queryable = context.Guitars.AsQueryable();
+            await HttpContext.InsertPaginationParameterInResponse(queryable, pagination.QuantityPerPage);
+            return await queryable.Paginate(pagination).ToListAsync();
         }
 
         [HttpGet("{id}", Name = "GetGuitar")]
