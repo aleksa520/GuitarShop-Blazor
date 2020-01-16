@@ -12,6 +12,23 @@
 
 <div class="container">
 
+    <div class="form-inline">
+        <label class="sr-only" for="filter-name">
+            Filter
+        </label>
+        <input type="text" class="form-control mb-2 mr-sm-2"
+               @bind="nameFilter"
+               placeholder="Filter by name" />
+        <button type="button" class="btn btn-primary mb-2 mr-sm-2"
+                @onclick="Filter">
+            Filter
+        </button>
+        <button type="button" class="btn btn-danger mb-2"
+                @onclick="Clear">
+            Clear
+        </button>
+    </div>
+
     <Pagination TotalPagesQuantity="totalPageQuantity" CurrentPage="currentPage" Radius="2"
                 SelectedPage="SelectedPage"></Pagination>
 
@@ -21,7 +38,7 @@
                 <img class="center" height="100" width="100" src="http://www.pzv.org.rs/obuke/images/loading.gif" />
             </div>
         </NullTemplate>
-        
+
         <WithElementsTemplate>
             <div style="padding-bottom:10px" class="btn-holder">
                 <a class="btn btn-success" href="guitars/create">Add Guitar</a>
@@ -58,14 +75,14 @@
     </GenericList>
 
     @*<GenericList Elements="guitars">
-        <WithIndividualElementTemplate Context="guitar">
-            <div class="card">
-                <div class="card-body">
-                    @guitar.Name
+            <WithIndividualElementTemplate Context="guitar">
+                <div class="card">
+                    <div class="card-body">
+                        @guitar.Name
+                    </div>
                 </div>
-            </div>
-        </WithIndividualElementTemplate>
-    </GenericList>*@
+            </WithIndividualElementTemplate>
+        </GenericList>*@
 
     @*@if (guitars == null)
         {
@@ -79,12 +96,19 @@
         {
 
         }*@
+
+
+    <footer style="padding:20px" class="blockquote-footer">
+        Copyright @@Aleksa 2020
+    </footer>
+
 </div>
 
 @code {
     List<Guitar> guitars { get; set; }
     private int totalPageQuantity;
     private int currentPage = 1;
+    private string nameFilter = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -93,7 +117,7 @@
 
     async Task LoadGuitars(int page = 1, int quantityPerPage = 5)
     {
-        var httpResponse = await http.GetAsync($"api/guitars?page={page}&quantityPerPage={quantityPerPage}");
+        var httpResponse = await http.GetAsync($"api/guitars?page={page}&quantityPerPage={quantityPerPage}&name={nameFilter}");
         if (httpResponse.IsSuccessStatusCode)
         {
             totalPageQuantity = int.Parse(httpResponse.Headers.GetValues("pagesQuantity").FirstOrDefault());
@@ -104,6 +128,19 @@
         {
 
         }
+    }
+
+    private async Task Filter()
+    {
+        currentPage = 1;
+        await LoadGuitars();
+    }
+
+    private async Task Clear()
+    {
+        nameFilter = string.Empty;
+        currentPage = 1;
+        await LoadGuitars();
     }
 
     private async Task SelectedPage(int page)

@@ -20,9 +20,13 @@ namespace GuitarShop.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Guitar>>> Get([FromQuery]PaginationDTO pagination)
+        public async Task<ActionResult<List<Guitar>>> Get([FromQuery]PaginationDTO pagination, [FromQuery]string name)
         {
             var queryable = context.Guitars.AsQueryable();
+            if (!string.IsNullOrEmpty(name))
+            {
+                queryable = queryable.Where(x => x.Name.Contains(name));
+            }
             await HttpContext.InsertPaginationParameterInResponse(queryable, pagination.QuantityPerPage);
             return await queryable.Paginate(pagination).ToListAsync();
         }
