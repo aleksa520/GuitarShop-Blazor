@@ -16,5 +16,6 @@ namespace GuitarShop.Server
         }
 
         public DbSet<Guitar> Guitars { get; set; }
+        public DbSet<GuitarBill> GuitarBills { get; set; }
     }
 }
