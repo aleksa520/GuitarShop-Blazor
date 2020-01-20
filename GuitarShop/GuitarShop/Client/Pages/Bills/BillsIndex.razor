@@ -1,0 +1,41 @@
+﻿@page "/bills"
+
+<h3>BillsIndex</h3>
+
+<GenericList Elements="guitarsInBill">
+    <NullTemplate>
+        <div>
+            <img class="center" height="100" width="100" src="http://www.pzv.org.rs/obuke/images/loading.gif" />
+        </div>
+    </NullTemplate>
+
+    <WithElementsTemplate>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var guitar in guitarsInBill)
+                {
+                    <tr>
+                        <td>@guitar.Name</td>
+                        <td>@guitar.Price $</td>
+                        <td>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </WithElementsTemplate>
+</GenericList>
+
+@code {
+
+    public List<Guitar> guitarsInBill { get; set; }
+
+}

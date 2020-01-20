@@ -12,6 +12,7 @@
 
 <div class="container">
 
+    
     <div class="form-inline">
         <label class="sr-only" for="filter-name">
             Filter
@@ -63,6 +64,7 @@
                             <td>
                                 <a class="btn btn-success" href="guitars/edit/@guitar.Id">Edit</a>
                                 <button class="btn btn-danger" @onclick="@(()=>DeleteGuitar(guitar.Id))">Delete</button>
+                                <button class="btn btn-success" @onclick="@(()=>AddGuitarToBill(guitar.Id))">Add Guitar To The Bill</button>
                             </td>
                         </tr>
                     }
@@ -158,6 +160,20 @@
             await http.DeleteAsync($"api/guitars/{guitarId}");
             await LoadGuitars();
         }
+    }
+
+    async Task AddGuitarToBill(int guitarId)
+    {
+        Guitar guitar = guitars.ElementAt(guitarId);
+        await http.PostJsonAsync("api/guitars", guitar);
+
+        ////await js.DisplayMassage("My message");
+        //var guitarSelected = guitars.First(x => x.Id == guitarId);
+        //if (await js.Confirm("", $"Do You Want To Delete {guitarSelected.Name}?", SweetAlertMessageType.warning))
+        //{
+        //    await http.DeleteAsync($"api/guitars/{guitarId}");
+        //    await LoadGuitars();
+        //}
     }
 
     private void ExportAsCSV()
