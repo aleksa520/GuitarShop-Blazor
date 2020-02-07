@@ -36,6 +36,6 @@
 
 @code {
 
-    public List<Guitar> guitarsInBill { get; set; }
+    public List<Guitar> guitarsInBill { get; set; } = Session.Instance.Bill.Guitars;
 
 }

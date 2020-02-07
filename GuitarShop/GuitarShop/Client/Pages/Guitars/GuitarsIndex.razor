@@ -162,18 +162,10 @@
         }
     }
 
-    async Task AddGuitarToBill(int guitarId)
+    private void AddGuitarToBill(int guitarId)
     {
         Guitar guitar = guitars.ElementAt(guitarId);
-        await http.PostJsonAsync("api/guitars", guitar);
-
-        ////await js.DisplayMassage("My message");
-        //var guitarSelected = guitars.First(x => x.Id == guitarId);
-        //if (await js.Confirm("", $"Do You Want To Delete {guitarSelected.Name}?", SweetAlertMessageType.warning))
-        //{
-        //    await http.DeleteAsync($"api/guitars/{guitarId}");
-        //    await LoadGuitars();
-        //}
+        Session.Instance.Bill.Guitars.Add(guitar);
     }
 
     private void ExportAsCSV()
