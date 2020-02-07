@@ -1,6 +1,6 @@
 ﻿@page "/bills"
 
-<h3>BillsIndex</h3>
+<h1>Your Bill</h1>
 
 <GenericList Elements="guitarsInBill">
     <NullTemplate>
@@ -9,6 +9,11 @@
         </div>
     </NullTemplate>
 
+    <EmptyTemplate>
+        <div>
+            <label>Your Bill is Empty</label>
+        </div>
+    </EmptyTemplate>
     <WithElementsTemplate>
 
         <table class="table">
@@ -34,8 +39,12 @@
     </WithElementsTemplate>
 </GenericList>
 
+<div>
+    <label>Total Price: @Price </label>
+</div>
+
 @code {
-
+    public string Price { get; set; } = Session.Instance.Bill.GetFormattedTotalPrice();
+    public GuitarBill Bill { get; set; } = Session.Instance.Bill;
     public List<Guitar> guitarsInBill { get; set; } = Session.Instance.Bill.Guitars;
-
 }

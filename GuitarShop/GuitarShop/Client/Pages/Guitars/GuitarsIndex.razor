@@ -166,6 +166,7 @@
     {
         Guitar guitar = guitars.ElementAt(guitarId);
         Session.Instance.Bill.Guitars.Add(guitar);
+        js.DisplayMassage("", $"{guitar.Name} added to the bill", SweetAlertMessageType.info);
     }
 
     private void ExportAsCSV()
