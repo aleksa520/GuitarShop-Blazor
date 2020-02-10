@@ -1,4 +1,8 @@
 ﻿@page "/bills"
+@inject IJSRuntime js
+@inject HttpClient http
+@using System.IO
+@using System.Text.Json
 
 <h1>Your Bill</h1>
 
@@ -28,8 +32,8 @@
                 @foreach (var guitar in guitarsInBill)
                 {
                     <tr>
-                        <td>@guitar.Name</td>
-                        <td>@guitar.Price $</td>
+                        <td>@guitar.Guitar.Name</td>
+                        <td>@guitar.Guitar.Price $</td>
                         <td>
                         </td>
                     </tr>
@@ -40,11 +44,61 @@
 </GenericList>
 
 <div>
-    <label>Total Price: @Price </label>
+    <label>Total Price: @Price $</label>
+</div>
+
+<div>
+    <button class="btn btn-success" @onclick="@(()=>Buy())">Buy</button>
+</div>
+
+<div class="btn-holder" style="padding-top:20px">
+    <button class="btn btn-dark" style="padding:20px" @onclick="ExportAsCSV">Download Bill</button>
 </div>
 
 @code {
     public string Price { get; set; } = Session.Instance.Bill.GetFormattedTotalPrice();
     public GuitarBill Bill { get; set; } = Session.Instance.Bill;
-    public List<Guitar> guitarsInBill { get; set; } = Session.Instance.Bill.Guitars;
+    public List<GuitarBillItem> guitarsInBill { get; set; } = Session.Instance.Bill.GuitarItems;
+
+    async Task Buy()
+    {
+        if (Session.Instance.Bill.GuitarItems.Count == 0)
+        {
+            await js.DisplayMassage("", $"Your Bill Is Empty!", SweetAlertMessageType.error);
+            return;
+        }
+        Session.Instance.Bill.Date = DateTime.ParseExact("02.02.2020", "dd.MM.yyyy", null);
+        Session.Instance.Bill.DatumTest = DateTime.Now.ToString("dd.MM.yyyy. HH:mm:ss");
+        
+        await http.PostJsonAsync("api/bill", Session.Instance.Bill);
+        Session.Instance.Bill.GuitarItems.Clear();
+        Price = Session.Instance.Bill.GetFormattedTotalPrice();
+        await js.DisplayMassage("", $"Thank You For Your Purchase!", SweetAlertMessageType.success);
+    }
+
+    private void ExportAsCSV()
+    {
+        List<Guitar> guitars = new List<Guitar>();
+        foreach(var guitarBillItem in Session.Instance.Bill.GuitarItems)
+        {
+            guitars.Add(guitarBillItem.Guitar);
+        }
+        using (var memoryStream = new MemoryStream())
+        {
+            using (var writer = new StreamWriter(memoryStream))
+            {
+                using (var csv = new CsvHelper.CsvWriter(writer))
+                {
+                    foreach (var guitar in guitars)
+                    {
+                        csv.WriteRecord(guitar);
+                        csv.NextRecord();
+                    }
+                }
+
+                var arr = memoryStream.ToArray();
+                js.SaveAs("guitars.csv", arr);
+            }
+        }
+    }
 }

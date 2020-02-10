@@ -10,10 +10,15 @@ namespace GuitarShop.Shared.Models
     {
         [Column("id")]
         public int Id { get; set; }
+        public DateTime Date { get; set; }
 
-        public List<Guitar> Guitars { get; set; } = new List<Guitar>();
+        [NotMapped]
+        public string DatumTest { get; set; }
+        [NotMapped]
+        public int Test { get; set; }
+        public List<GuitarBillItem> GuitarItems { get; set; } = new List<GuitarBillItem>();
 
-        public decimal GetTotalPrice() => Guitars.Sum(g => g.Price);
+        public decimal GetTotalPrice() => GuitarItems.Sum(g => g.Guitar.Price);
 
         public string GetFormattedTotalPrice() => GetTotalPrice().ToString("0.00");
     }

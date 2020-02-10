@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace GuitarShop.Server.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/bill")]
     public class GuitarBillsController : ControllerBase
     {
         private readonly ApplicationDbContext context;
@@ -33,8 +33,13 @@ namespace GuitarShop.Server.Controllers
         [HttpPost]
         public async Task<ActionResult> Post(GuitarBill guitarBill)
         {
+            guitarBill.Date = DateTime.Parse(guitarBill.DatumTest);
+            foreach(GuitarBillItem item in guitarBill.GuitarItems)
+            {
+                context.Entry(item.Guitar).State = EntityState.Unchanged;
+            }
             context.Add(guitarBill);
-            await context.SaveChangesAsync();
+            context.SaveChanges();
             return new CreatedAtRouteResult("GetGuitarBill", new { id = guitarBill.Id }, guitarBill);
         }
 

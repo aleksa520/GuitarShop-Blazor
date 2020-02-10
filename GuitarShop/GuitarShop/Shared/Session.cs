@@ -20,7 +20,6 @@ namespace GuitarShop.Shared
         }
 
         public GuitarBill Bill { get; set; }
-
         private Session()
         {
             Bill = new GuitarBill();
