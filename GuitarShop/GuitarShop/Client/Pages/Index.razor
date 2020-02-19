@@ -1,4 +1,5 @@
-﻿@page "/"
+﻿@inject IJSRuntime js
+@page "/"
 
 <div class="container">
     <div style="
@@ -7,4 +8,37 @@
         <h1 style="color:darksalmon; padding:80px; ">Welcome to Guitar Shop</h1>
         <p style="color: darksalmon; padding:40px; ">Welcome to your new guitar shop, where you can buy the best guitar there is.</p>
     </div>
+    <div>
+        <EditForm Model="@User" OnValidSubmit="@Login">
+            <div class="form-field">
+                <label>Username: </label>
+                <div>
+                    <InputText @bind-Value="@User.Username"></InputText>
+                </div>
+            </div>
+            <div class="form-field">
+                <label>Password: </label>
+                <div>
+                    <InputText @bind-Value="@User.Password"></InputText>
+                </div>
+            </div>
+            <div style="padding:5px">
+                <button type="submit" class="btn btn-success">
+                    Login
+                </button>
+            </div>
+        </EditForm>
+    </div>
 </div>
+
+@code{
+    [Parameter]
+    public User User { get; set; } = new User();
+
+    private void Login()
+    {
+        Session.Instance.User.Username = User.Username;
+        Session.Instance.User.Password = User.Password;
+        js.DisplayMassage("", $"{User.Username} Has Logged In", SweetAlertMessageType.success);
+    }
+}

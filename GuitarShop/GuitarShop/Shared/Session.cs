@@ -18,11 +18,12 @@ namespace GuitarShop.Shared
                 return instance;
             }
         }
-
+        public User User { get; set; }
         public GuitarBill Bill { get; set; }
         private Session()
         {
             Bill = new GuitarBill();
+            User = new User();
         }
     }
 }

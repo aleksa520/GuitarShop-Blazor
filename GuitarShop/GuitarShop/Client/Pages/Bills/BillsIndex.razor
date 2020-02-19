@@ -4,74 +4,122 @@
 @using System.IO
 @using System.Text.Json
 
-<h1>Your Bill</h1>
+@if (Session.Instance.User.Username == "admin" || Session.Instance.User.Password == "admin")
+{
+    <div>
+        <GenericList Elements="Bills">
+            <NullTemplate>
+                <div>
+                    <img class="center" height="100" width="100" src="http://www.pzv.org.rs/obuke/images/loading.gif" />
+                </div>
+            </NullTemplate>
 
-<GenericList Elements="Session.Instance.Bill.GuitarItems">
-    <NullTemplate>
-        <div>
-            <img class="center" height="100" width="100" src="http://www.pzv.org.rs/obuke/images/loading.gif" />
-        </div>
-    </NullTemplate>
+            <EmptyTemplate>
+                <div>
+                    <label>There Are No Bills</label>
+                </div>
+            </EmptyTemplate>
+            <WithElementsTemplate>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var guitarBill in Bills)
+                            {
+                            <tr>
+                                <td>@guitarBill.Date</td>
+                            </tr>
+                            }
+                    </tbody>
+                </table>
+            </WithElementsTemplate>
+        </GenericList>
+    </div>
+}
+else
+{
+    <h1>Your Bill</h1>
 
-    <EmptyTemplate>
-        <div>
-            <label>Your Bill is Empty</label>
-        </div>
-    </EmptyTemplate>
-    <WithElementsTemplate>
+    <GenericList Elements="Session.Instance.Bill.GuitarItems">
+        <NullTemplate>
+            <div>
+                <img class="center" height="100" width="100" src="http://www.pzv.org.rs/obuke/images/loading.gif" />
+            </div>
+        </NullTemplate>
 
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Amount</th>
-                    <th></th>
-                    <th></th>
-                    <th>Total Price</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var guitar in Session.Instance.Bill.GuitarItems)
-                {
+        <EmptyTemplate>
+            <div>
+                <label>Your Bill is Empty</label>
+            </div>
+        </EmptyTemplate>
+        <WithElementsTemplate>
+
+            <table class="table">
+                <thead>
                     <tr>
-                        <td>@guitar.Guitar.Name</td>
-                        <td>@guitar.Guitar.Price $</td>
-                        <td>@guitar.Number</td>
-                        <td>
-                            <button class="btn btn-success" @onclick="@(()=>Increment(guitar.Guitar.Id))">+</button>
-                        </td>
-                        <td>
-                            <button class="btn btn-danger" @onclick="@(()=>Decrement(guitar.Guitar.Id))">-</button>
-                        </td>
-                        <td>@guitar.ItemPrice $</td>
-                        <td>
-                            <button class="btn btn-danger" @onclick="@(()=>DeleteItem(guitar.Guitar.Id))">Remove</button>
-                        </td>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Amount</th>
+                        <th></th>
+                        <th></th>
+                        <th>Total Price</th>
+                        <th></th>
                     </tr>
-                }
-            </tbody>
-        </table>
-    </WithElementsTemplate>
-</GenericList>
+                </thead>
+                <tbody>
+                    @foreach (var guitar in Session.Instance.Bill.GuitarItems)
+                        {
+                        <tr>
+                            <td>@guitar.Guitar.Name</td>
+                            <td>@guitar.Guitar.Price $</td>
+                            <td>@guitar.Number</td>
+                            <td>
+                                <button class="btn btn-success" @onclick="@(() => Increment(guitar.Guitar.Id))">+</button>
+                            </td>
+                            <td>
+                                <button class="btn btn-danger" @onclick="@(() => Decrement(guitar.Guitar.Id))">-</button>
+                            </td>
+                            <td>@guitar.ItemPrice $</td>
+                            <td>
+                                <button class="btn btn-danger" @onclick="@(() => DeleteItem(guitar.Guitar.Id))">Remove</button>
+                            </td>
+                        </tr>
+                        }
+                </tbody>
+            </table>
+        </WithElementsTemplate>
+    </GenericList>
 
-<div>
-    <label>Total Bill Price: @Price $</label>
-</div>
+    <div>
+        <label>Total Bill Price: @Price $</label>
+    </div>
 
-<div>
-    <button class="btn btn-success" @onclick="@(()=>Buy())">Buy</button>
-</div>
+    <div>
+        <button class="btn btn-success" @onclick="@(() => Buy())">Buy</button>
+    </div>
 
-<div class="btn-holder" style="padding-top:20px">
-    <button class="btn btn-dark" style="padding:20px" @onclick="ExportAsCSV">Download Bill</button>
-</div>
-
+    <div class="btn-holder" style="padding-top:20px">
+        <button class="btn btn-dark" style="padding:20px" @onclick="ExportAsCSV">Download Bill</button>
+    </div>
+}
 @code {
+    public List<GuitarBill> Bills { get; set; }
     public string Price { get; set; } = Session.Instance.Bill.GetFormattedTotalPrice();
     public GuitarBill Bill { get; set; } = Session.Instance.Bill;
     public List<GuitarBillItem> guitarsInBill { get; set; } = Session.Instance.Bill.GuitarItems;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadBills();
+    }
+
+    async Task LoadBills()
+    {
+        Bills = await http.GetJsonAsync<List<GuitarBill>>($"api/bill");
+    }
 
     async Task Buy()
     {
@@ -81,7 +129,7 @@
             return;
         }
         Session.Instance.Bill.DatumTest = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
-
+        Session.Instance.Bill.User = Session.Instance.User;
         await http.PostJsonAsync("api/bill", Session.Instance.Bill);
         Session.Instance.Bill.GuitarItems.Clear();
         Price = Session.Instance.Bill.GetFormattedTotalPrice();

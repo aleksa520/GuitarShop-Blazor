@@ -39,7 +39,7 @@ namespace GuitarShop.Server.Controllers
                 context.Entry(item.Guitar).State = EntityState.Unchanged;
             }
             context.Add(guitarBill);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
             return new CreatedAtRouteResult("GetGuitarBill", new { id = guitarBill.Id }, guitarBill);
         }
 
