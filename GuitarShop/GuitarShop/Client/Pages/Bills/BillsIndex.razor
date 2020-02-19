@@ -26,7 +26,8 @@
                     <th>Name</th>
                     <th>Price</th>
                     <th>Amount</th>
-                    <th>Add</th>
+                    <th></th>
+                    <th></th>
                     <th>Total Price</th>
                     <th></th>
                 </tr>
@@ -41,9 +42,12 @@
                         <td>
                             <button class="btn btn-success" @onclick="@(()=>Increment(guitar.Guitar.Id))">+</button>
                         </td>
+                        <td>
+                            <button class="btn btn-danger" @onclick="@(()=>Decrement(guitar.Guitar.Id))">-</button>
+                        </td>
                         <td>@guitar.ItemPrice $</td>
                         <td>
-                            <button class="btn btn-danger" @onclick="@(()=>DeleteItem(guitar.Guitar.Id))">Delete</button>
+                            <button class="btn btn-danger" @onclick="@(()=>DeleteItem(guitar.Guitar.Id))">Remove</button>
                         </td>
                     </tr>
                 }
@@ -91,6 +95,22 @@
             if (g.Guitar.Id == guitarId)
             {
                 g.Number++;
+                Price = Session.Instance.Bill.GetFormattedTotalPrice();
+                return;
+            }
+        }
+    }
+
+    private void Decrement(int guitarId)
+    {
+        foreach (GuitarBillItem g in Session.Instance.Bill.GuitarItems)
+        {
+            if (g.Guitar.Id == guitarId)
+            {
+                if (g.Number == 1)
+                    //DeleteItem(guitarId);
+                    return;
+                g.Number--;
                 Price = Session.Instance.Bill.GetFormattedTotalPrice();
                 return;
             }
