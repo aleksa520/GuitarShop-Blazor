@@ -10,9 +10,12 @@
         <a class="btn btn-success" href="guitars/create">Add Guitar</a>
     </div>*@
 
+<div style="padding-bottom:10px" class="btn-holder">
+    <a class="btn btn-success" href="guitars/create">Add Guitar</a>
+</div>
+
 <div class="container">
 
-    
     <div class="form-inline">
         <label class="sr-only" for="filter-name">
             Filter
@@ -41,10 +44,6 @@
         </NullTemplate>
 
         <WithElementsTemplate>
-            <div style="padding-bottom:10px" class="btn-holder">
-                <a class="btn btn-success" href="guitars/create">Add Guitar</a>
-            </div>
-
             <table class="table">
                 <thead>
                     <tr>
@@ -70,9 +69,7 @@
                     }
                 </tbody>
             </table>
-            <div class="btn-holder">
-                <button class="btn btn-dark" style="padding:20px" @onclick="ExportAsCSV">Export as CSV</button>
-            </div>
+
         </WithElementsTemplate>
     </GenericList>
 
@@ -164,29 +161,22 @@
 
     private void AddGuitarToBill(int guitarId)
     {
-        Guitar guitar = guitars.ElementAt(guitarId);
-        Session.Instance.Bill.Guitars.Add(guitar);
-        js.DisplayMassage("", $"{guitar.Name} added to the bill", SweetAlertMessageType.info);
-    }
-
-    private void ExportAsCSV()
-    {
-        using (var memoryStream = new MemoryStream())
+        Guitar guitar = guitars.First(x => x.Id == guitarId);
+        GuitarBillItem guitarBillItem = new GuitarBillItem()
         {
-            using (var writer = new StreamWriter(memoryStream))
-            {
-                using (var csv = new CsvHelper.CsvWriter(writer))
-                {
-                    foreach (var guitar in guitars)
-                    {
-                        csv.WriteRecord(guitar);
-                        csv.NextRecord();
-                    }
-                }
+            Guitar = guitar
+        };
 
-                var arr = memoryStream.ToArray();
-                js.SaveAs("guitars.csv", arr);
+        foreach (GuitarBillItem g in Session.Instance.Bill.GuitarItems)
+        {
+            if (g.Guitar.Id == guitarBillItem.Guitar.Id)
+            {
+                g.Number++;
+                js.DisplayMassage("", $"{guitar.Name} Added Your Bill", SweetAlertMessageType.success);
+                return;
             }
         }
+        Session.Instance.Bill.GuitarItems.Add(guitarBillItem);
+        js.DisplayMassage("", $"{guitar.Name} Added Your Bill", SweetAlertMessageType.success);
     }
 }

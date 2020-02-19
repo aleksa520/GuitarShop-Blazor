@@ -27,19 +27,14 @@ namespace GuitarShop.Server.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("GuitarBillId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Price")
-                        .HasColumnType("int");
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("GuitarBillId");
 
                     b.ToTable("Guitars");
                 });
@@ -52,16 +47,86 @@ namespace GuitarShop.Server.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("GuitarBills");
                 });
 
-            modelBuilder.Entity("GuitarShop.Shared.Models.Guitar", b =>
+            modelBuilder.Entity("GuitarShop.Shared.Models.GuitarBillItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("GuitarBillId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("GuitarId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GuitarBillId");
+
+                    b.HasIndex("GuitarId");
+
+                    b.ToTable("GuitarBillItem");
+                });
+
+            modelBuilder.Entity("GuitarShop.Shared.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("User");
+                });
+
+            modelBuilder.Entity("GuitarShop.Shared.Models.GuitarBill", b =>
+                {
+                    b.HasOne("GuitarShop.Shared.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("GuitarShop.Shared.Models.GuitarBillItem", b =>
                 {
                     b.HasOne("GuitarShop.Shared.Models.GuitarBill", null)
-                        .WithMany("Guitars")
+                        .WithMany("GuitarItems")
                         .HasForeignKey("GuitarBillId");
+
+                    b.HasOne("GuitarShop.Shared.Models.Guitar", "Guitar")
+                        .WithMany()
+                        .HasForeignKey("GuitarId");
                 });
 #pragma warning restore 612, 618
         }

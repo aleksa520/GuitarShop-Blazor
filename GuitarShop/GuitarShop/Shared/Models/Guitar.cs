@@ -9,10 +9,10 @@ namespace GuitarShop.Shared.Models
     public class Guitar
     {
         [Column("id")]
-        public int Id { get; set; }  
+        public int Id { get; set; }
         [Required]
         public string Name { get; set; }
         [Required]
-        public int Price { get; set; }
+        public decimal Price { get; set; }
     }
 }
