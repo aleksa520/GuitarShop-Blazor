@@ -18,6 +18,7 @@ namespace GuitarShop.Shared
                 return instance;
             }
         }
+        public bool Loged { get; set; } = false;
         public User User { get; set; }
         public GuitarBill Bill { get; set; }
         private Session()

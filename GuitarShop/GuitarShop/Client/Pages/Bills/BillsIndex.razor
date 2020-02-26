@@ -4,7 +4,7 @@
 @using System.IO
 @using System.Text.Json
 
-@if (Session.Instance.User.Username == "admin" || Session.Instance.User.Password == "admin")
+@if (Session.Instance.User.Password == "admin")
 {
     <div>
         <GenericList Elements="Bills">
@@ -97,6 +97,26 @@ else
         <label>Total Bill Price: @Price $</label>
     </div>
 
+    <EditForm Model="@User" OnValidSubmit="@Login">
+        <div class="form-field">
+            <label>First Name: </label>
+            <div>
+                <InputText @bind-Value="@User.FirstName"></InputText>
+            </div>
+        </div>
+        <div class="form-field">
+            <label>Last Name: </label>
+            <div>
+                <InputText @bind-Value="@User.LastName"></InputText>
+            </div>
+        </div>
+        <div style="padding:5px">
+            <button type="submit" class="btn btn-success">
+                Done
+            </button>
+        </div>
+    </EditForm>
+
     <div>
         <button class="btn btn-success" @onclick="@(() => Buy())">Buy</button>
     </div>
@@ -106,6 +126,7 @@ else
     </div>
 }
 @code {
+    public User User { get; set; } = new User();
     public List<GuitarBill> Bills { get; set; }
     public string Price { get; set; } = Session.Instance.Bill.GetFormattedTotalPrice();
     public GuitarBill Bill { get; set; } = Session.Instance.Bill;
@@ -121,19 +142,32 @@ else
         Bills = await http.GetJsonAsync<List<GuitarBill>>($"api/bill");
     }
 
+    private void Login()
+    {
+        js.DisplayMassage("", $"Name Saved!", SweetAlertMessageType.success);
+    }
+
     async Task Buy()
     {
+        if(User.FirstName == null || User.LastName == null || User.FirstName == "" || User.LastName == "")
+        {
+            await js.DisplayMassage("", $"Please Provide Us With Your First and Last Name!", SweetAlertMessageType.error);
+            return;
+        }
         if (Session.Instance.Bill.GuitarItems.Count == 0)
         {
             await js.DisplayMassage("", $"Your Bill Is Empty!", SweetAlertMessageType.error);
             return;
         }
+
         Session.Instance.Bill.DatumTest = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
-        Session.Instance.Bill.User = Session.Instance.User;
+        Session.Instance.Bill.User = User;
         await http.PostJsonAsync("api/bill", Session.Instance.Bill);
         Session.Instance.Bill.GuitarItems.Clear();
         Price = Session.Instance.Bill.GetFormattedTotalPrice();
-        await js.DisplayMassage("", $"Thank You For Your Purchase!", SweetAlertMessageType.success);
+        await js.DisplayMassage("", $"Thank You For Your Purchase {User.FirstName} {User.LastName}!", SweetAlertMessageType.success);
+        User.FirstName = "";
+        User.LastName = "";
     }
 
     private void Increment(int guitarId)
@@ -215,7 +249,6 @@ else
                         csv.NextRecord();
                     }
                 }
-
                 var arr = memoryStream.ToArray();
                 js.SaveAs("guitars.csv", arr);
             }

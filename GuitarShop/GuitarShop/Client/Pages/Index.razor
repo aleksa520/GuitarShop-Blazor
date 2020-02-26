@@ -9,17 +9,15 @@
         <p style="color: darksalmon; padding:40px; ">Welcome to your new guitar shop, where you can buy the best guitar there is.</p>
     </div>
     <div>
-        <EditForm Model="@User" OnValidSubmit="@Login">
-            <div class="form-field">
-                <label>Username: </label>
-                <div>
-                    <InputText @bind-Value="@User.Username"></InputText>
-                </div>
-            </div>
+        <div>
+            Admin Login
+        </div><div style="visibility:@loginVisibility">
+
+        <EditForm Model="@User" OnValidSubmit="@Login" >
             <div class="form-field">
                 <label>Password: </label>
                 <div>
-                    <InputText @bind-Value="@User.Password"></InputText>
+                    <input type="password" @bind="@User.Password" />
                 </div>
             </div>
             <div style="padding:5px">
@@ -28,17 +26,59 @@
                 </button>
             </div>
         </EditForm>
+        </div>
+        <button  style="visibility:@logoutVisibility" type="submit" class="btn btn-danger" @onclick="@(()=>Logout())">
+            Logout
+        </button>
     </div>
 </div>
 
 @code{
     [Parameter]
     public User User { get; set; } = new User();
+    public string logoutVisibility { get; set; } = "hidden";
+    public string loginVisibility { get; set; } = "visible";
+    
+
+    protected override void OnInitialized()
+    {
+        LoadButtons();
+    }
+
+    private void LoadButtons()
+    {
+        if (Session.Instance.Loged)
+        {
+            loginVisibility = "hidden";
+            logoutVisibility = "visible";
+        }else
+        {
+            logoutVisibility = "hidden";
+            loginVisibility = "visible";
+        }
+    }
 
     private void Login()
     {
-        Session.Instance.User.Username = User.Username;
+        if(User.Password != "admin")
+        {
+            js.DisplayMassage("", $"Incorrect Password", SweetAlertMessageType.error);
+            return;
+        }
         Session.Instance.User.Password = User.Password;
-        js.DisplayMassage("", $"{User.Username} Has Logged In", SweetAlertMessageType.success);
+        js.DisplayMassage("", $"Admin Has Logged In", SweetAlertMessageType.success);
+        Session.Instance.Loged = true;
+        User.Password = "";
+        loginVisibility = "hidden";
+        logoutVisibility = "visible";
+    }
+
+    private void Logout()
+    {
+        Session.Instance.User.Password = "";
+        js.DisplayMassage("", $"Admin Has Logged Out", SweetAlertMessageType.success);
+        Session.Instance.Loged = false;
+        loginVisibility = "visible";
+        logoutVisibility = "hidden";
     }
 }

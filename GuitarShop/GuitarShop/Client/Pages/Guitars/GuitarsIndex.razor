@@ -6,7 +6,7 @@
 
 <h3 style="padding:30px" class="card-header-tabs">Guitars</h3>
 
-@if (Session.Instance.User.Username == "admin" || Session.Instance.User.Password == "admin")
+@if (Session.Instance.User.Password == "admin")
 {
     <div style="padding-bottom:10px" class="btn-holder">
         <a class="btn btn-success" href="guitars/create">Add Guitar</a>
@@ -59,7 +59,7 @@
                             <td>@guitar.Name</td>
                             <td>@guitar.Price $</td>
                             <td>
-                                @if (Session.Instance.User.Username == "admin" || Session.Instance.User.Password == "admin")
+                                @if (Session.Instance.User.Password == "admin")
                                 {
                                     <a class="btn btn-success" href="guitars/edit/@guitar.Id">Edit</a>
                                     <button class="btn btn-danger" @onclick="@(()=>DeleteGuitar(guitar.Id))">Delete</button>
