@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GuitarShop.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200604184926_novo")]
-    partial class novo
+    [Migration("20200605180042_migracijaNova")]
+    partial class migracijaNova
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

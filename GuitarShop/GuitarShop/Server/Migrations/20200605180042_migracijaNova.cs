@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace GuitarShop.Server.Migrations
 {
-    public partial class novo : Migration
+    public partial class migracijaNova : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
