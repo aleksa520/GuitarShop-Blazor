@@ -27,7 +27,14 @@ namespace GuitarShop.Server.Controllers
         [HttpGet("{id}", Name = "GetGuitarBill")]
         public async Task<ActionResult<GuitarBill>> Get(int id)
         {
-            return await context.GuitarBills.FirstOrDefaultAsync(x => x.Id == id);
+            var bill = context.GuitarBills.Include(b => b.GuitarItems).Single(x => x.Id == id);
+            //foreach(var i in bill.GuitarItems)
+            //{
+            //    var item = context.GuitarBillItem.Include(it => it.Guitar).Single(y => y.Id == i.Id);
+            //    bill.GuitarItems.Add(item);
+            //}
+            ////return await context.GuitarBills.FirstOrDefaultAsync(x => x.Id == id);
+            return bill;
         }
 
         [HttpPost]

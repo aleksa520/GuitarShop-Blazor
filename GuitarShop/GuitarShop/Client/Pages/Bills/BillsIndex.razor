@@ -24,6 +24,7 @@
                     <thead>
                         <tr>
                             <th>Date</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -31,8 +32,12 @@
                             {
                             <tr>
                                 <td>@guitarBill.Date</td>
+                                <td>
+                                    <button class="btn btn-success" @onclick="@(()=>View(guitarBill.Id))">View</button>             
+                                </td>
                             </tr>
                             }
+                        
                     </tbody>
                 </table>
             </WithElementsTemplate>
@@ -111,9 +116,9 @@ else
             </div>
         </div>
         <div style="padding:5px">
-            <button type="submit" class="btn btn-success">
+            @*<button type="submit" class="btn btn-success">
                 Done
-            </button>
+            </button>*@
         </div>
     </EditForm>
 
@@ -147,9 +152,17 @@ else
         js.DisplayMassage("", $"Name Saved!", SweetAlertMessageType.success);
     }
 
+    async Task View(int GuitarBillId)
+    {
+        GuitarBill bill = await http.GetJsonAsync<GuitarBill>($"api/bill/{GuitarBillId}");
+        List<GuitarBillItem> items = bill.GuitarItems; 
+        await js.DisplayMassage("Bill Id: "+bill.Id, $"Ovde idu sve gitare" + items[0], SweetAlertMessageType.info);
+        return;
+    }
+
     async Task Buy()
     {
-        if(User.FirstName == null || User.LastName == null || User.FirstName == "" || User.LastName == "")
+        if (User.FirstName == null || User.LastName == null || User.FirstName == "" || User.LastName == "")
         {
             await js.DisplayMassage("", $"Please Provide Us With Your First and Last Name!", SweetAlertMessageType.error);
             return;
